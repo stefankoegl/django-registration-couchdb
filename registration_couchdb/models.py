@@ -38,7 +38,7 @@ def activate_user(activation_key):
     if not SHA1_RE.search(activation_key):
         return False
 
-    r = User.view('registration/users_by_activation_key', key=activation_key, include_docs=True)
+    r = RegistrationUser.view('registration_couchdb/users_by_activation_key', key=activation_key, include_docs=True)
     if not r:
         return False
     user = r.first()
@@ -60,7 +60,7 @@ def create_inactive_user(username, email, password,
     user. To disable this, pass ``send_email=False``.
     
     """
-    new_user = User()
+    new_user = RegistrationUser()
     new_user.username = username
     new_user.email = email
     new_user.set_password(password)
@@ -132,7 +132,7 @@ def delete_expired_users():
     be deleted.
     
     """
-    for user in User.all_users():
+    for user in RegistrationUser.all_users():
         if user.activation_key_expired():
             if not user.is_active:
                 user.delete()

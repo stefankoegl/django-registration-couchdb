@@ -3,8 +3,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login
 
 from registration_couchdb.forms import RegistrationForm
-
-from django_couchdb_utils.auth import User
+from registration_couchdb.models import RegistrationUser
 
 
 class SimpleBackend(object):
@@ -21,7 +20,7 @@ class SimpleBackend(object):
         
         """
         username, email, password = kwargs['username'], kwargs['email'], kwargs['password1']
-        user = User()
+        user = RegistrationUser()
         user.username = username
         user.email = email
         user.set_password(password)
