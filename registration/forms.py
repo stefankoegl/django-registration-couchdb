@@ -4,10 +4,11 @@ Forms and validation code for user registration.
 """
 
 
-from django.contrib.auth.models import User
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from couchdbkit.ext.django.forms import DocumentForm
+from django_couchdb_utils.auth import User
 
 # I put this on all required fields, because it's easier to pick up
 # on them with CSS or JavaScript if they have a class of "required"
@@ -16,7 +17,7 @@ from django.utils.translation import ugettext_lazy as _
 attrs_dict = {'class': 'required'}
 
 
-class RegistrationForm(forms.Form):
+class RegistrationForm(DocumentForm):
     """
     Form for registering a new user account.
     
@@ -49,7 +50,7 @@ class RegistrationForm(forms.Form):
         
         """
         try:
-            user = User.objects.get(username__iexact=self.cleaned_data['username'])
+            user = User.get_user(self.cleaned_data['username'], is_active=None)
         except User.DoesNotExist:
             return self.cleaned_data['username']
         raise forms.ValidationError(_("A user with that username already exists."))
@@ -91,7 +92,7 @@ class RegistrationFormUniqueEmail(RegistrationForm):
         site.
         
         """
-        if User.objects.filter(email__iexact=self.cleaned_data['email']):
+        if User.get_user_by_email(self.cleaned_data['email'], is_active=None):
             raise forms.ValidationError(_("This email address is already in use. Please supply a different email address."))
         return self.cleaned_data['email']
 

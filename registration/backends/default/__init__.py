@@ -2,9 +2,8 @@ from django.conf import settings
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
 
-from registration import signals
 from registration.forms import RegistrationForm
-from registration.models import RegistrationProfile
+from registration import models
 
 
 class DefaultBackend(object):
@@ -63,23 +62,14 @@ class DefaultBackend(object):
         information about these templates and the contexts provided to
         them.
 
-        After the ``User`` and ``RegistrationProfile`` are created and
-        the activation email is sent, the signal
-        ``registration.signals.user_registered`` will be sent, with
-        the new ``User`` as the keyword argument ``user`` and the
-        class of this backend as the sender.
-
         """
         username, email, password = kwargs['username'], kwargs['email'], kwargs['password1']
         if Site._meta.installed:
             site = Site.objects.get_current()
         else:
             site = RequestSite(request)
-        new_user = RegistrationProfile.objects.create_inactive_user(username, email,
+        new_user = models.create_inactive_user(username, email,
                                                                     password, site)
-        signals.user_registered.send(sender=self.__class__,
-                                     user=new_user,
-                                     request=request)
         return new_user
 
     def activate(self, request, activation_key):
@@ -87,17 +77,8 @@ class DefaultBackend(object):
         Given an an activation key, look up and activate the user
         account corresponding to that key (if possible).
 
-        After successful activation, the signal
-        ``registration.signals.user_activated`` will be sent, with the
-        newly activated ``User`` as the keyword argument ``user`` and
-        the class of this backend as the sender.
-        
         """
-        activated = RegistrationProfile.objects.activate_user(activation_key)
-        if activated:
-            signals.user_activated.send(sender=self.__class__,
-                                        user=activated,
-                                        request=request)
+        activated = models.activate_user(activation_key)
         return activated
 
     def registration_allowed(self, request):

@@ -1,10 +1,10 @@
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
-from django.contrib.auth.models import User
 
-from registration import signals
 from registration.forms import RegistrationForm
+
+from django_couchdb_utils.auth import User
 
 
 class SimpleBackend(object):
@@ -21,15 +21,16 @@ class SimpleBackend(object):
         
         """
         username, email, password = kwargs['username'], kwargs['email'], kwargs['password1']
-        User.objects.create_user(username, email, password)
+        user = User()
+        user.username = username
+        user.email = email
+        user.set_password(password)
+        user.save()
         
         # authenticate() always has to be called before login(), and
         # will return the user we just created.
         new_user = authenticate(username=username, password=password)
         login(request, new_user)
-        signals.user_registered.send(sender=self.__class__,
-                                     user=new_user,
-                                     request=request)
         return new_user
 
     def activate(self, **kwargs):
