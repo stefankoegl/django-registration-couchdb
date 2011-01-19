@@ -37,11 +37,12 @@ def activate_user(activation_key):
     # the database.
     if not SHA1_RE.search(activation_key):
         return False
-    try:
-        r = User.view('registration/users_by_activation_key', key=activation_key, include_docs=True)
-        if not r:
-            return False
-        user = r.first()
+
+    r = User.view('registration/users_by_activation_key', key=activation_key, include_docs=True)
+    if not r:
+        return False
+    user = r.first()
+
     if not user.activation_key_expired():
         del user.activation_key
         user.is_active = True
