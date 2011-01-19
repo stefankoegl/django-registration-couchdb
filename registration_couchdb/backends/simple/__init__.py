@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
 
-from registration.forms import RegistrationForm
+from registration_couchdb.forms import RegistrationForm
 
 from django_couchdb_utils.auth import User
 

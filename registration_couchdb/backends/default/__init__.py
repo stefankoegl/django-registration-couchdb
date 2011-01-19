@@ -2,8 +2,8 @@ from django.conf import settings
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
 
-from registration.forms import RegistrationForm
-from registration import models
+from registration_couchdb.forms import RegistrationForm
+from registration_couchdb import models
 
 
 class DefaultBackend(object):

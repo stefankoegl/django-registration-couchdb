@@ -6,8 +6,8 @@ from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from registration import forms
-from registration.models import RegistrationProfile
+from registration_couchdb import forms
+from registration_couchdb.models import RegistrationProfile
 
 
 class RegistrationViewTests(TestCase):

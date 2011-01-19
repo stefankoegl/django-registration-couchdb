@@ -11,7 +11,9 @@ root_dir = os.path.dirname(__file__)
 if root_dir:
     os.chdir(root_dir)
 
-for dirpath, dirnames, filenames in os.walk('registration'):
+src_path = 'registration_couchdb'
+
+for dirpath, dirnames, filenames in os.walk(src_path):
     # Ignore dirnames that start with '.'
     for i, dirname in enumerate(dirnames):
         if dirname.startswith('.'): del dirnames[i]
@@ -21,7 +23,7 @@ for dirpath, dirnames, filenames in os.walk('registration'):
             pkg = pkg.replace(os.path.altsep, '.')
         packages.append(pkg)
     elif filenames:
-        prefix = dirpath[13:] # Strip "registration/" or "registration\"
+        prefix = dirpath[len(src_path):] # Strip "registration/" or "registration\"
         for f in filenames:
             data_files.append(os.path.join(prefix, f))
 
@@ -33,9 +35,9 @@ setup(name='django-registration',
       author_email='james@b-list.org',
       url='http://www.bitbucket.org/ubernostrum/django-registration/wiki/',
       download_url='http://www.bitbucket.org/ubernostrum/django-registration/get/v0.7.gz',
-      package_dir={'registration': 'registration'},
+      package_dir={src_path: 'registration_couchdb'},
       packages=packages,
-      package_data={'registration': data_files},
+      package_data={src_path: data_files},
       classifiers=['Development Status :: 4 - Beta',
                    'Environment :: Web Environment',
                    'Framework :: Django',
