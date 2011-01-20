@@ -50,7 +50,7 @@ class RegistrationForm(DocumentForm):
         
         """
         user = RegistrationUser.get_user(self.cleaned_data['username'], is_active=None)
-        if user is None
+        if user is None:
             return self.cleaned_data['username']
         raise forms.ValidationError(_("A user with that username already exists."))
 
