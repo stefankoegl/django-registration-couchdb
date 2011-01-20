@@ -138,6 +138,21 @@ def delete_expired_users():
                 user.delete()
 
 
+def get_migration_user_data(user):
+    """
+    Returns the data that will be merged into the User object
+    when migrating an ORM-based User to CouchDB
+    """
+    try:
+        reg_profile = RegistrationProfile.objects.get(user=user)
+        if reg_profile.activation_key != RegistrationProfile.ACTIVATED and \
+            not user.is_active:
+            return {'activation_key': reg_profile.activation_key}
+    except:
+        return {}
+
+
+
 class RegistrationUser(User):
     """
     A simple profile which stores an activation key for use during
@@ -180,8 +195,8 @@ class RegistrationUser(User):
         
         """
         expiration_date = datetime.timedelta(days=settings.ACCOUNT_ACTIVATION_DAYS)
-        return getattr(self, 'activation_key', False) or \
-               (self.date_joined + expiration_date <= datetime.datetime.now())
+        return bool(getattr(self, 'activation_key', False) and \
+               (self.date_joined + expiration_date <= datetime.datetime.now()))
     activation_key_expired.boolean = True
 
     def send_activation_email(self, site):
