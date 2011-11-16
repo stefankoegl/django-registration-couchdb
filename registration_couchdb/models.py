@@ -38,10 +38,7 @@ def activate_user(activation_key):
     if not SHA1_RE.search(activation_key):
         return False
 
-    r = RegistrationUser.view('registration_couchdb/users_by_activation_key', key=activation_key, include_docs=True)
-    if not r:
-        return False
-    user = r.first()
+    user = User.get_by_key(activation_key)
 
     if not user.activation_key_expired():
         del user.activation_key
@@ -58,19 +55,18 @@ def create_inactive_user(username, email, password,
 
     By default, an activation email will be sent to the new
     user. To disable this, pass ``send_email=False``.
-    
+
     """
-    new_user = RegistrationUser()
+    new_user = User()
     new_user.username = username
     new_user.email = email
     new_user.set_password(password)
     new_user.is_active = False
+    create_profile(new_user)
     new_user.save()
 
-    create_profile(new_user)
-
     if send_email:
-        user.send_activation_email(site)
+        new_user.send_activation_email(site)
 
     return new_user
 
@@ -132,7 +128,7 @@ def delete_expired_users():
     be deleted.
     
     """
-    for user in RegistrationUser.all_users():
+    for user in User.all_users():
         if user.activation_key_expired():
             if not user.is_active:
                 user.delete()
@@ -153,7 +149,7 @@ def get_migration_user_data(user):
 
 
 
-class RegistrationUser(User):
+class User(User):
     """
     A simple profile which stores an activation key for use during
     user account registration.
@@ -170,8 +166,21 @@ class RegistrationUser(User):
     
     """
     activation_key = StringProperty()
-    
-    
+
+
+    class Meta:
+        app_label = 'registration_couchdb'
+
+
+    @classmethod
+    def get_by_key(cls, key):
+        r = cls.view('registration_couchdb/users_by_activationkey',
+                key          = key,
+                include_docs = True,
+            )
+        return r.first() if r else None
+
+
     def activation_key_expired(self):
         """
         Determine whether this ``RegistrationProfile``'s activation
