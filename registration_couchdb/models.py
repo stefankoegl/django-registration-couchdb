@@ -206,7 +206,7 @@ class User(User):
         expiration_date = datetime.timedelta(days=settings.ACCOUNT_ACTIVATION_DAYS)
         return bool(getattr(self, 'activation_key', False) and \
                (self.date_joined + expiration_date <= datetime.datetime.now()))
-    activation_key_expired.boolean = True
+
 
     def send_activation_email(self, site):
         """
