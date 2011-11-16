@@ -7,7 +7,7 @@ from django.template.loader import render_to_string
 from django.utils.hashcompat import sha_constructor
 
 from couchdbkit.ext.django.schema import *
-from django_couchdb_utils.auth import User
+from django_couchdb_utils.auth.models import User
 
 
 SHA1_RE = re.compile('^[a-f0-9]{40}$')
