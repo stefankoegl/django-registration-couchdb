@@ -1,14 +1,11 @@
-VERSION = (0, 8, 0, 'alpha', 1)
+# -*- coding: utf-8 -*-
 
-def get_version():
-    version = '%s.%s' % (VERSION[0], VERSION[1])
-    if VERSION[2]:
-        version = '%s.%s' % (version, VERSION[2])
-    if VERSION[3:] == ('alpha', 0):
-        version = '%s pre-alpha' % version
-    else:
-        if VERSION[3] != 'final':
-            version = "%s %s" % (version, VERSION[3])
-            if VERSION[4] != 0:
-                version = '%s %s' % (version, VERSION[4])
-    return version
+""" django-registration-couchdb provides the functionality of
+django-registration that uses CouchDB (through couchdbkit) instead of the
+relational databases supported by Django's ORM. """
+
+__author__ = 'Stefan Kögl <stefan@skoegl.net>'
+__version__ = '0.1'
+__website__ = 'https://github.com/stefankoegl/django-registration-couchdb'
+__license__ = 'Modified BSD License'
+

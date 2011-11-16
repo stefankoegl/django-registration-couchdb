@@ -1,50 +1,50 @@
+#!/usr/bin/env python
+# Setup script for django-registration-couchdb
+
 from distutils.core import setup
-import os
 
-from registration import get_version
+import re
 
+src_main = open('registration_couchdb/__init__.py').read()
+metadata = dict(re.findall("__([a-z]+)__ = '([^']+)'", src_main))
+docstrings = re.findall('"""(.*?)"""', src_main, re.DOTALL)
 
-# Compile the list of packages available, because distutils doesn't have
-# an easy way to do this.
-packages, data_files = [], []
-root_dir = os.path.dirname(__file__)
-if root_dir:
-    os.chdir(root_dir)
+# How is the package going to be called?
+PACKAGE = 'registration_couchdb'
 
-src_path = 'registration_couchdb'
+# List the modules that need to be installed/packaged
+PACKAGES = (
+        'registration_couchdb',
+        'registration_couchdb.backends',
+        'registration_couchdb.backends.default',
+        'registration_couchdb.management',
+        'registration_couchdb.management.commands',
+)
 
-for dirpath, dirnames, filenames in os.walk(src_path):
-    # Ignore dirnames that start with '.'
-    for i, dirname in enumerate(dirnames):
-        if dirname.startswith('.'): del dirnames[i]
-    if '__init__.py' in filenames:
-        pkg = dirpath.replace(os.path.sep, '.')
-        if os.path.altsep:
-            pkg = pkg.replace(os.path.altsep, '.')
-        packages.append(pkg)
-    elif filenames:
-        prefix = dirpath[len(src_path):] # Strip "registration/" or "registration\"
-        for f in filenames:
-            data_files.append(os.path.join(prefix, f))
+PACKAGE_DATA = {}
+for package in PACKAGES:
+    PACKAGE_DATA[package] = ['_design/views/*/*.js']
 
 
-setup(name='django-registration',
-      version=get_version().replace(' ', '-'),
-      description='An extensible user-registration application for Django',
-      author='James Bennett',
-      author_email='james@b-list.org',
-      url='http://www.bitbucket.org/ubernostrum/django-registration/wiki/',
-      download_url='http://www.bitbucket.org/ubernostrum/django-registration/get/v0.7.gz',
-      package_dir={src_path: 'registration_couchdb'},
-      packages=packages,
-      package_data={src_path: data_files},
-      classifiers=['Development Status :: 4 - Beta',
-                   'Environment :: Web Environment',
-                   'Framework :: Django',
-                   'Intended Audience :: Developers',
-                   'License :: OSI Approved :: BSD License',
-                   'Operating System :: OS Independent',
-                   'Programming Language :: Python',
-                   'Topic :: Software Development :: Libraries :: Python Modules',
-                   'Topic :: Utilities'],
-      )
+# Metadata fields extracted from the main file
+AUTHOR_EMAIL = metadata['author']
+VERSION = metadata['version']
+WEBSITE = metadata['website']
+LICENSE = metadata['license']
+DESCRIPTION = docstrings[0]
+
+# Extract name and e-mail ("Firstname Lastname <mail@example.org>")
+AUTHOR, EMAIL = re.match(r'(.*) <(.*)>', AUTHOR_EMAIL).groups()
+
+setup(name=PACKAGE,
+      version=VERSION,
+      description=DESCRIPTION,
+      author=AUTHOR,
+      author_email=EMAIL,
+      license=LICENSE,
+      url=WEBSITE,
+      packages=PACKAGES,
+      package_data=PACKAGE_DATA,
+      download_url='http://pypi.python.org/packages/source/' + \
+              PACKAGE[0] + '/' + PACKAGE + \
+              '/'+PACKAGE+'-'+VERSION+'.tar.gz')
