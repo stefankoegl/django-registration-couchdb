@@ -6,6 +6,7 @@ Forms and validation code for user registration.
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django import forms
 
 from registration_couchdb.models import User
 
@@ -16,7 +17,7 @@ from registration_couchdb.models import User
 attrs_dict = {'class': 'required'}
 
 
-class RegistrationForm(DocumentForm):
+class RegistrationForm(forms.Form):
     """
     Form for registering a new user account.
     
